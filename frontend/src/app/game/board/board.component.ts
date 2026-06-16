@@ -39,9 +39,9 @@ import { Board, PlayerColor } from '../../models';
   styles: [`
     .board-wrapper { display: flex; flex-direction: column; align-items: center; gap: 4px; user-select: none; width: 100%; }
 
-    .preview-row { display: flex; gap: 6px; padding: 0 6px; }
-    .preview-cell { width: 64px; height: 36px; display: flex; align-items: flex-end; justify-content: center; cursor: pointer; }
-    .preview-disc { width: 46px; height: 46px; border-radius: 50%; opacity: 0; transition: opacity 0.15s; }
+    .preview-row { display: flex; gap: 6px; padding: 0 12px; }
+    .preview-cell { width: 72px; height: 54px; display: flex; align-items: flex-end; justify-content: center; cursor: pointer; }
+    .preview-disc { width: 54px; height: 54px; border-radius: 50%; opacity: 0; transition: opacity 0.15s; }
     .preview-disc.visible { opacity: 0.6; }
     .preview-disc.red    { background: #C0392B; }
     .preview-disc.yellow { background: #E8B84B; }
@@ -89,18 +89,20 @@ import { Board, PlayerColor } from '../../models';
     @media (max-width: 520px) {
       .cell { width: 44px; height: 44px; }
       .disc { width: 36px; height: 36px; }
-      .preview-cell { width: 44px; }
-      .preview-disc { width: 32px; height: 32px; }
       .board { gap: 4px; padding: 8px; }
       .column { gap: 4px; }
+      .preview-row { gap: 4px; padding: 0 8px; }
+      .preview-cell { width: 52px; height: 36px; }
+      .preview-disc { width: 36px; height: 36px; }
     }
     @media (max-width: 380px) {
       .cell { width: 38px; height: 38px; }
       .disc { width: 30px; height: 30px; }
-      .preview-cell { width: 38px; }
-      .preview-disc { width: 26px; height: 26px; }
       .board { gap: 3px; padding: 6px; }
       .column { gap: 3px; padding: 2px; }
+      .preview-row { gap: 3px; padding: 0 6px; }
+      .preview-cell { width: 42px; height: 30px; }
+      .preview-disc { width: 30px; height: 30px; }
     }
   `],
 })
