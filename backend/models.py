@@ -24,10 +24,6 @@ class Token(BaseModel):
     token_type: str = "bearer"
 
 
-class UserInDB(BaseModel):
-    username: str
-
-
 class RoomCreate(BaseModel):
     ai_mode: bool = False
 

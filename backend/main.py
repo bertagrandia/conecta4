@@ -6,7 +6,6 @@ from datetime import timedelta
 from config import settings
 from models import GuestLogin, Token, RoomCreate
 from auth import (
-    get_or_create_user,
     create_access_token,
     get_current_user,
     decode_token,
@@ -29,9 +28,9 @@ app.add_middleware(
 
 @app.post("/auth/guest", response_model=Token)
 async def guest_login(body: GuestLogin):
-    user = get_or_create_user(body.username.strip())
+    username = body.username.strip()
     token = create_access_token(
-        {"sub": user.username},
+        {"sub": username},
         timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES),
     )
     return Token(access_token=token)
