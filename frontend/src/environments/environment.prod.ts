@@ -1,5 +1,5 @@
 export const environment = {
   production: true,
-  apiUrl: 'RAILWAY_BACKEND_URL',
-  wsUrl: 'RAILWAY_BACKEND_WS_URL',
+  apiUrl: 'https://conecta4-backend-drj6.onrender.com',
+  wsUrl: 'wss://conecta4-backend-drj6.onrender.com',
 };
