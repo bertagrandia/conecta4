@@ -34,6 +34,9 @@ export interface MoveResult {
   row: number;
   player: PlayerColor;
   current_turn: PlayerColor;
+  red_player: string | null;
+  yellow_player: string | null;
+  blue_player: string | null;
   scores: Record<string, number>;
 }
 

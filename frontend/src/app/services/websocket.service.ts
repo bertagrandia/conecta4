@@ -123,7 +123,11 @@ export class WebSocketService implements OnDestroy {
       } else if (msg.type === 'move_result') {
         next.board = msg.board;
         next.currentTurn = msg.current_turn;
+        next.redPlayer = msg.red_player;
+        next.yellowPlayer = msg.yellow_player;
+        next.bluePlayer = msg.blue_player;
         next.scores = msg.scores;
+        next.myColor = this._resolveColor(msg.red_player, msg.yellow_player, msg.blue_player);
       } else if (msg.type === 'game_over') {
         next.board = msg.board;
         next.status = 'finished';
