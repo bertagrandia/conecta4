@@ -19,19 +19,27 @@ import { AuthService } from '../services/auth.service';
         </button>
       </header>
 
-      <div class="status-bar">
+      <div class="status-bar" [class.three-player]="!!state().bluePlayer">
         <div class="player-tag" [class.active]="state().currentTurn === 'red' && state().status === 'playing'">
           <span class="dot red"></span>
           <span class="name">{{ state().redPlayer ?? 'Esperando...' }}</span>
           <span class="score">{{ state().scores[state().redPlayer || ''] || 0 }}</span>
         </div>
-        <div class="turn-msg">
-          <ng-container *ngIf="state().status === 'playing'">
-            <ng-container *ngIf="isMyTurn(); else notMyTurn">¡Tu turno!</ng-container>
-            <ng-template #notMyTurn>Turno de {{ currentTurnName() }}</ng-template>
-          </ng-container>
-          <ng-container *ngIf="state().status === 'waiting'">Esperando oponente...</ng-container>
-          <ng-container *ngIf="state().status === 'finished'">Partida terminada</ng-container>
+        <div class="turn-col">
+          <div class="turn-msg">
+            <ng-container *ngIf="state().status === 'playing'">
+              <ng-container *ngIf="isMyTurn(); else notMyTurn">¡Tu turno!</ng-container>
+              <ng-template #notMyTurn>Turno de {{ currentTurnName() }}</ng-template>
+            </ng-container>
+            <ng-container *ngIf="state().status === 'waiting'">Esperando oponente...</ng-container>
+            <ng-container *ngIf="state().status === 'finished'">Partida terminada</ng-container>
+          </div>
+          <div class="player-tag blue-mid" *ngIf="state().bluePlayer"
+               [class.active]="state().currentTurn === 'blue' && state().status === 'playing'">
+            <span class="dot blue"></span>
+            <span class="name">{{ state().bluePlayer }}</span>
+            <span class="score">{{ state().scores[state().bluePlayer || ''] || 0 }}</span>
+          </div>
         </div>
         <div class="player-tag" [class.active]="state().currentTurn === 'yellow' && state().status === 'playing'">
           <span class="dot yellow"></span>
@@ -74,7 +82,10 @@ import { AuthService } from '../services/auth.service';
             </ng-container>
             <ng-container *ngIf="state().winner !== 'draw'">
               <div class="big-disc-wrap">
-                <span class="big-disc" [class.red]="state().winner === 'red'" [class.yellow]="state().winner === 'yellow'"></span>
+                <span class="big-disc"
+                  [class.red]="state().winner === 'red'"
+                  [class.yellow]="state().winner === 'yellow'"
+                  [class.blue]="state().winner === 'blue'"></span>
               </div>
               <h2 class="result-text">{{ winnerName() }} gana!</h2>
               <p class="result-sub" *ngIf="state().winner === state().myColor">¡Enhorabuena!</p>
@@ -120,9 +131,13 @@ import { AuthService } from '../services/auth.service';
     .dot { width: 14px; height: 14px; border-radius: 50%; display: inline-block; }
     .dot.red    { background: #C0392B; }
     .dot.yellow { background: #E8B84B; }
+    .dot.blue   { background: #2980B9; }
     .name  { color: #d4f5c8; font-size: 0.9rem; max-width: 100px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .score { color: #4DB349; font-weight: 700; font-size: 1rem; }
+    .turn-col { display: flex; flex-direction: column; align-items: center; gap: 4px; }
     .turn-msg { color: #7AAF72; font-size: 0.9rem; text-align: center; }
+    .blue-mid { border-color: transparent; }
+    .blue-mid.active { border-color: #2980B9; background: rgba(41,128,185,0.08); }
 
     .board-area {
       flex: 1; display: flex; align-items: center; justify-content: center;
@@ -144,6 +159,7 @@ import { AuthService } from '../services/auth.service';
     .big-disc { display: inline-block; width: 64px; height: 64px; border-radius: 50%; }
     .big-disc.red    { background: radial-gradient(circle at 35% 35%, #e05050, #C0392B); box-shadow: 0 0 24px #C0392B88; }
     .big-disc.yellow { background: radial-gradient(circle at 35% 35%, #f5d080, #E8B84B); box-shadow: 0 0 24px #E8B84B88; }
+    .big-disc.blue   { background: radial-gradient(circle at 35% 35%, #5dade2, #2980B9); box-shadow: 0 0 24px #2980B988; }
     .result-text { color: #d4f5c8; font-size: 1.6rem; margin: 0.5rem 0; }
     .result-sub  { color: #E8B84B; font-size: 1rem; margin: 0; }
     .overlay-actions { display: flex; flex-direction: column; gap: 0.75rem; margin-top: 1.5rem; }
@@ -200,8 +216,19 @@ export class GameComponent implements OnInit, OnDestroy {
   lastMove = signal<{ row: number; col: number } | null>(null);
 
   isMyTurn     = computed(() => { const s = this.state(); return s.myColor !== null && s.currentTurn === s.myColor; });
-  currentTurnName = computed(() => { const s = this.state(); return s.currentTurn === 'red' ? s.redPlayer : s.yellowPlayer; });
-  winnerName   = computed(() => { const s = this.state(); if (!s.winner || s.winner === 'draw') return ''; return s.winner === 'red' ? s.redPlayer : s.yellowPlayer; });
+  currentTurnName = computed(() => {
+    const s = this.state();
+    if (s.currentTurn === 'red')    return s.redPlayer;
+    if (s.currentTurn === 'yellow') return s.yellowPlayer;
+    return s.bluePlayer;
+  });
+  winnerName = computed(() => {
+    const s = this.state();
+    if (!s.winner || s.winner === 'draw') return '';
+    if (s.winner === 'red')    return s.redPlayer ?? '';
+    if (s.winner === 'yellow') return s.yellowPlayer ?? '';
+    return s.bluePlayer ?? '';
+  });
 
   constructor(private route: ActivatedRoute, private router: Router, private ws: WebSocketService, private auth: AuthService) {}
 

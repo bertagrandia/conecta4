@@ -13,6 +13,7 @@ class Room:
         self.code = code
         self.creator = creator
         self.opponent: Optional[str] = None
+        self.blue_player: Optional[str] = None
         self.ai_mode = ai_mode
         self.status = RoomStatus.waiting
         self.board: Board = empty_board()
@@ -21,6 +22,21 @@ class Room:
         self.yellow_player: Optional[str] = None
         self.scores: dict[str, int] = {}
         self._timeout_task: Optional[asyncio.Task] = None
+
+    @property
+    def is_three_player(self) -> bool:
+        return self.blue_player is not None
+
+    @property
+    def turn_order(self) -> list[str]:
+        if self.is_three_player:
+            return ["red", "yellow", "blue"]
+        return ["red", "yellow"]
+
+    def next_turn(self) -> str:
+        order = self.turn_order
+        idx = order.index(self.current_turn)
+        return order[(idx + 1) % len(order)]
 
     def start_timeout(self, rooms: dict) -> None:
         self._timeout_task = asyncio.create_task(self._auto_close(rooms))
@@ -40,6 +56,7 @@ class Room:
             "status": self.status.value,
             "creator": self.creator,
             "opponent": self.opponent,
+            "blue_player": self.blue_player,
             "ai_mode": self.ai_mode,
         }
 
@@ -76,21 +93,37 @@ def get_room(code: str) -> Optional[Room]:
 
 
 def join_room(code: str, username: str) -> Room:
-    from fastapi import HTTPException, status
+    from fastapi import HTTPException, status as http_status
 
     room = _rooms.get(code)
     if room is None:
         raise HTTPException(status_code=404, detail="Room not found")
-    if room.status != RoomStatus.waiting:
-        raise HTTPException(status_code=400, detail="Room is not available")
-    if room.creator == username:
-        raise HTTPException(status_code=400, detail="You cannot join your own room")
-    room.cancel_timeout()
-    room.opponent = username
-    room.yellow_player = username
-    room.scores[username] = 0
-    room.status = RoomStatus.playing
-    return room
+
+    all_players = [room.red_player, room.yellow_player, room.blue_player]
+    if username in all_players:
+        raise HTTPException(status_code=400, detail="You are already in this room")
+
+    # 2nd player joins → yellow, game starts
+    if room.status == RoomStatus.waiting:
+        if room.creator == username:
+            raise HTTPException(status_code=400, detail="You cannot join your own room")
+        room.cancel_timeout()
+        room.opponent = username
+        room.yellow_player = username
+        room.scores[username] = 0
+        room.status = RoomStatus.playing
+        return room
+
+    # 3rd player joins a 2-player game → becomes blue, board resets
+    if room.status == RoomStatus.playing and room.blue_player is None and not room.ai_mode:
+        room.blue_player = username
+        room.scores[username] = 0
+        room.board = empty_board()
+        room.current_turn = "red"
+        room.status = RoomStatus.playing
+        return room
+
+    raise HTTPException(status_code=400, detail="Room is full")
 
 
 def enable_ai_mode(code: str, username: str) -> Room:
