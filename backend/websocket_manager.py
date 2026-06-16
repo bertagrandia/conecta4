@@ -55,7 +55,11 @@ async def handle_connect(websocket: WebSocket, room_code: str, username: str) ->
         _room_connections[room_code] = {}
 
     _room_connections[room_code][username] = websocket
-    await _send(websocket, _board_state(room))
+    # If this is the blue player connecting, broadcast reset to ALL existing connections
+    if room.blue_player == username:
+        await _broadcast(room_code, _board_state(room))
+    else:
+        await _send(websocket, _board_state(room))
 
     try:
         while True:
