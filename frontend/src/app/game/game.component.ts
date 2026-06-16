@@ -51,6 +51,16 @@ import { AuthService } from '../services/auth.service';
         </app-board>
       </div>
 
+      <!-- AI FALLBACK TOAST -->
+      <div class="ai-toast" *ngIf="state().aiError">
+        <div class="ai-toast-icon">⚠️</div>
+        <div class="ai-toast-body">
+          <strong>Groq falló — usando Minimax</strong>
+          <span class="ai-toast-error">{{ state().aiError }}</span>
+        </div>
+        <button class="ai-toast-close" (click)="clearAiError()">✕</button>
+      </div>
+
       <div class="overlay" *ngIf="state().status === 'finished'">
         <div class="overlay-card">
           <ng-container *ngIf="state().disconnectedPlayer">
@@ -143,6 +153,33 @@ import { AuthService } from '../services/auth.service';
     .secondary { background: #1E3D18; color: #7AAF72; border: 1px solid #2A4A22; }
     .secondary:hover { background: #2A5222; color: #d4f5c8; }
 
+    .ai-toast {
+      position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%);
+      display: flex; align-items: flex-start; gap: 0.75rem;
+      background: #1a2e10; border: 1px solid #E8B84B;
+      border-radius: 10px; padding: 0.75rem 1rem;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+      z-index: 200; max-width: 90vw; width: 420px;
+      animation: slide-up 0.3s ease-out;
+    }
+    @keyframes slide-up {
+      from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+      to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+    }
+    .ai-toast-icon { font-size: 1.2rem; flex-shrink: 0; margin-top: 1px; }
+    .ai-toast-body { display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0; }
+    .ai-toast-body strong { color: #E8B84B; font-size: 0.88rem; }
+    .ai-toast-error {
+      color: #7AAF72; font-size: 0.75rem;
+      word-break: break-all; overflow-wrap: anywhere;
+    }
+    .ai-toast-close {
+      background: transparent; border: none; color: #7AAF72;
+      cursor: pointer; font-size: 0.9rem; flex-shrink: 0;
+      padding: 0; line-height: 1;
+    }
+    .ai-toast-close:hover { color: #d4f5c8; }
+
     @media (max-width: 520px) {
       .top-bar { padding: 0.5rem 0.75rem; }
       .room-label { font-size: 0.78rem; }
@@ -190,4 +227,5 @@ export class GameComponent implements OnInit, OnDestroy {
   rematch(): void { this.ws.sendRematch(); }
   surrender(): void { this.ws.sendSurrender(); }
   goLobby(): void { this.router.navigate(['/lobby']); }
+  clearAiError(): void { this.ws.gameState.update((s) => ({ ...s, aiError: null })); }
 }

@@ -1,6 +1,6 @@
 import re
 from groq import AsyncGroq
-from game import Board, get_valid_columns, ai_best_move, YELLOW, RED
+from game import Board, get_valid_columns, ai_best_move, YELLOW
 
 _client: AsyncGroq | None = None
 
@@ -18,18 +18,17 @@ def _board_to_text(board: Board) -> str:
     lines = []
     for row in board:
         lines.append("  ".join(symbols[cell] for cell in row))
-    col_numbers = "  ".join(str(i) for i in range(7))
-    lines.append(col_numbers)
+    lines.append("  ".join(str(i) for i in range(7)))
     return "\n".join(lines)
 
 
-async def groq_best_move(board: Board, ai_player: int = YELLOW) -> int:
+async def groq_best_move(board: Board, ai_player: int = YELLOW) -> tuple[int, str | None]:
+    """Returns (column, error_message). error_message is None if Groq succeeded."""
     valid_cols = get_valid_columns(board)
     if not valid_cols:
-        return 0
+        return 0, None
 
     board_text = _board_to_text(board)
-
     prompt = f"""Eres un experto en Conecta 4. Juegas como A (Amarillo). El humano juega como R (Rojo).
 
 Tablero (· = vacío, R = Rojo/humano, A = Amarillo/tú):
@@ -54,8 +53,10 @@ Responde SOLO con el número de columna (un único dígito entre 0 y 6)."""
         if match:
             col = int(match.group())
             if col in valid_cols:
-                return col
+                return col, None
+        error = f"Groq devolvió una columna inválida: '{text}'"
     except Exception as e:
-        print(f"[Groq] error: {e} — usando minimax como fallback")
+        error = str(e)
 
-    return ai_best_move(board, ai_player)
+    fallback_col = ai_best_move(board, ai_player)
+    return fallback_col, error

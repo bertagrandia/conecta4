@@ -54,7 +54,12 @@ export interface WSError {
   message: string;
 }
 
-export type WSMessage = GameState | MoveResult | GameOver | PlayerDisconnected | WSError;
+export interface AIFallback {
+  type: 'ai_fallback';
+  error: string;
+}
+
+export type WSMessage = GameState | MoveResult | GameOver | PlayerDisconnected | WSError | AIFallback;
 
 export interface LocalGameState {
   board: Board;
@@ -69,4 +74,5 @@ export interface LocalGameState {
   myColor: PlayerColor | null;
   roomCode: string | null;
   aiMode: boolean;
+  aiError: string | null;
 }

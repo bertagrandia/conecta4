@@ -188,7 +188,12 @@ async def _ai_move(room: Room, room_code: str) -> None:
     await asyncio.sleep(0.6)
     if room.status != RoomStatus.playing or room.current_turn != "yellow":
         return
-    col = await groq_best_move(room.board, YELLOW)
+    col, groq_error = await groq_best_move(room.board, YELLOW)
+    if groq_error:
+        await _broadcast(room_code, {
+            "type": "ai_fallback",
+            "error": groq_error,
+        })
     new_board, row = drop_piece(room.board, col, YELLOW)
     room.board = new_board
     room.current_turn = "red"

@@ -22,6 +22,7 @@ const INITIAL_STATE = (): LocalGameState => ({
   myColor: null,
   roomCode: null,
   aiMode: false,
+  aiError: null,
 });
 
 @Injectable({ providedIn: 'root' })
@@ -130,6 +131,8 @@ export class WebSocketService implements OnDestroy {
       } else if (msg.type === 'player_disconnected') {
         next.disconnectedPlayer = msg.username;
         next.status = 'finished';
+      } else if (msg.type === 'ai_fallback') {
+        next.aiError = msg.error;
       }
 
       return next;
