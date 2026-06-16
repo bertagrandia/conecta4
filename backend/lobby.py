@@ -125,12 +125,23 @@ def join_room(code: str, username: str) -> Room:
     room = _rooms.get(code)
     if room is None:
         raise HTTPException(status_code=404, detail="Room not found")
-    if room.status != RoomStatus.waiting:
-        raise HTTPException(status_code=400, detail="Room is full or game already started")
     if username in (room.red_player, room.yellow_player, room.blue_player):
         raise HTTPException(status_code=400, detail="You are already in this room")
     if room.player_count >= MAX_PLAYERS:
         raise HTTPException(status_code=400, detail="Room is full")
+
+    # Allow a 3rd player to join a game already in progress if the blue slot is still free
+    if room.status == RoomStatus.playing and room.blue_player is None:
+        room.cancel_duo_timeout()
+        room.third_player = username
+        room.blue_player = username
+        room.scores[username] = 0
+        return room
+
+    if room.status == RoomStatus.finished:
+        raise HTTPException(status_code=400, detail="Room game is already finished")
+    if room.status != RoomStatus.waiting:
+        raise HTTPException(status_code=400, detail="Room is full or game already started")
 
     if room.yellow_player is None:
         # Second player → cancel solo timer, start duo timer
@@ -140,7 +151,7 @@ def join_room(code: str, username: str) -> Room:
         room.scores[username] = 0
         room.start_duo_timeout(_rooms)
     else:
-        # Third player → cancel duo timer, start immediately
+        # Third player while still waiting → cancel duo timer, start immediately
         room.cancel_duo_timeout()
         room.third_player = username
         room.blue_player = username
