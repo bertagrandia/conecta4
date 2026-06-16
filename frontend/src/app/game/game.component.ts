@@ -19,32 +19,32 @@ import { AuthService } from '../services/auth.service';
         </button>
       </header>
 
-      <div class="status-bar" [class.three-player]="!!state().bluePlayer">
-        <div class="player-tag" [class.active]="state().currentTurn === 'red' && state().status === 'playing'">
-          <span class="dot red"></span>
-          <span class="name">{{ state().redPlayer ?? 'Esperando...' }}</span>
-          <span class="score">{{ state().scores[state().redPlayer || ''] || 0 }}</span>
+      <div class="status-bar">
+        <div class="turn-msg">
+          <ng-container *ngIf="state().status === 'playing'">
+            <ng-container *ngIf="isMyTurn(); else notMyTurn">¡Tu turno!</ng-container>
+            <ng-template #notMyTurn>Turno de {{ currentTurnName() }}</ng-template>
+          </ng-container>
+          <ng-container *ngIf="state().status === 'waiting'">Esperando oponente...</ng-container>
+          <ng-container *ngIf="state().status === 'finished'">Partida terminada</ng-container>
         </div>
-        <div class="turn-col">
-          <div class="turn-msg">
-            <ng-container *ngIf="state().status === 'playing'">
-              <ng-container *ngIf="isMyTurn(); else notMyTurn">¡Tu turno!</ng-container>
-              <ng-template #notMyTurn>Turno de {{ currentTurnName() }}</ng-template>
-            </ng-container>
-            <ng-container *ngIf="state().status === 'waiting'">Esperando oponente...</ng-container>
-            <ng-container *ngIf="state().status === 'finished'">Partida terminada</ng-container>
+        <div class="players-row">
+          <div class="player-tag" [class.active]="state().currentTurn === 'red' && state().status === 'playing'">
+            <span class="dot red"></span>
+            <span class="name">{{ state().redPlayer ?? 'Esperando...' }}</span>
+            <span class="score">{{ state().scores[state().redPlayer || ''] || 0 }}</span>
           </div>
-          <div class="player-tag blue-mid" *ngIf="state().bluePlayer"
+          <div class="player-tag" [class.active]="state().currentTurn === 'yellow' && state().status === 'playing'">
+            <span class="dot yellow"></span>
+            <span class="name">{{ state().yellowPlayer ?? 'Esperando...' }}</span>
+            <span class="score">{{ state().scores[state().yellowPlayer || ''] || 0 }}</span>
+          </div>
+          <div class="player-tag" *ngIf="state().bluePlayer"
                [class.active]="state().currentTurn === 'blue' && state().status === 'playing'">
             <span class="dot blue"></span>
             <span class="name">{{ state().bluePlayer }}</span>
             <span class="score">{{ state().scores[state().bluePlayer || ''] || 0 }}</span>
           </div>
-        </div>
-        <div class="player-tag" [class.active]="state().currentTurn === 'yellow' && state().status === 'playing'">
-          <span class="dot yellow"></span>
-          <span class="name">{{ state().yellowPlayer ?? 'Esperando...' }}</span>
-          <span class="score">{{ state().scores[state().yellowPlayer || ''] || 0 }}</span>
         </div>
       </div>
 
@@ -120,24 +120,25 @@ import { AuthService } from '../services/auth.service';
     .surrender-btn:hover { background: rgba(192,57,43,0.1); }
 
     .status-bar {
-      display: flex; align-items: center; justify-content: space-between;
-      width: 100%; max-width: 600px; padding: 1rem 1.5rem; box-sizing: border-box;
+      display: flex; flex-direction: column; align-items: center; gap: 6px;
+      width: 100%; max-width: 620px; padding: 0.75rem 1rem; box-sizing: border-box;
+    }
+    .turn-msg { color: #7AAF72; font-size: 0.9rem; text-align: center; }
+    .players-row {
+      display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; width: 100%;
     }
     .player-tag {
-      display: flex; align-items: center; gap: 8px; padding: 6px 12px;
+      display: flex; align-items: center; gap: 6px; padding: 5px 10px;
       border-radius: 8px; border: 2px solid transparent; transition: border-color 0.2s, background 0.2s;
+      flex: 1; min-width: 90px; max-width: 180px;
     }
     .player-tag.active { border-color: #4DB349; background: rgba(77,179,73,0.08); }
-    .dot { width: 14px; height: 14px; border-radius: 50%; display: inline-block; }
+    .dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
     .dot.red    { background: #C0392B; }
     .dot.yellow { background: #E8B84B; }
     .dot.blue   { background: #2980B9; }
-    .name  { color: #d4f5c8; font-size: 0.9rem; max-width: 100px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .score { color: #4DB349; font-weight: 700; font-size: 1rem; }
-    .turn-col { display: flex; flex-direction: column; align-items: center; gap: 4px; }
-    .turn-msg { color: #7AAF72; font-size: 0.9rem; text-align: center; }
-    .blue-mid { border-color: transparent; }
-    .blue-mid.active { border-color: #2980B9; background: rgba(41,128,185,0.08); }
+    .name  { color: #d4f5c8; font-size: 0.85rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; min-width: 0; }
+    .score { color: #4DB349; font-weight: 700; font-size: 0.95rem; flex-shrink: 0; }
 
     .board-area {
       flex: 1; display: flex; align-items: center; justify-content: center;
@@ -200,10 +201,11 @@ import { AuthService } from '../services/auth.service';
       .top-bar { padding: 0.5rem 0.75rem; }
       .room-label { font-size: 0.78rem; }
       .back-btn, .surrender-btn { padding: 3px 8px; font-size: 0.78rem; }
-      .status-bar { padding: 0.5rem 0.75rem; }
-      .player-tag { padding: 4px 6px; gap: 4px; }
-      .name { font-size: 0.78rem; max-width: 70px; }
-      .score { font-size: 0.9rem; }
+      .status-bar { padding: 0.4rem 0.5rem; gap: 4px; }
+      .players-row { gap: 4px; }
+      .player-tag { padding: 3px 6px; gap: 4px; min-width: 70px; }
+      .name { font-size: 0.75rem; }
+      .score { font-size: 0.82rem; }
       .turn-msg { font-size: 0.78rem; }
       .overlay-card { padding: 1.5rem; margin: 1rem; min-width: unset; width: calc(100% - 2rem); }
       .result-text { font-size: 1.3rem; }
