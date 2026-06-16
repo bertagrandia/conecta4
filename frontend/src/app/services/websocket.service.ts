@@ -15,7 +15,6 @@ const INITIAL_STATE = (): LocalGameState => ({
   status: 'waiting',
   redPlayer: null,
   yellowPlayer: null,
-  bluePlayer: null,
   scores: {},
   winner: null,
   winningCells: [],
@@ -114,20 +113,15 @@ export class WebSocketService implements OnDestroy {
         next.status = msg.status;
         next.redPlayer = msg.red_player;
         next.yellowPlayer = msg.yellow_player;
-        next.bluePlayer = msg.blue_player;
         next.scores = msg.scores;
         next.winner = null;
         next.winningCells = [];
         next.disconnectedPlayer = null;
-        next.myColor = this._resolveColor(msg.red_player, msg.yellow_player, msg.blue_player);
+        next.myColor = this._resolveColor(msg.red_player, msg.yellow_player);
       } else if (msg.type === 'move_result') {
         next.board = msg.board;
         next.currentTurn = msg.current_turn;
-        next.redPlayer = msg.red_player;
-        next.yellowPlayer = msg.yellow_player;
-        next.bluePlayer = msg.blue_player;
         next.scores = msg.scores;
-        next.myColor = this._resolveColor(msg.red_player, msg.yellow_player, msg.blue_player);
       } else if (msg.type === 'game_over') {
         next.board = msg.board;
         next.status = 'finished';
@@ -148,11 +142,9 @@ export class WebSocketService implements OnDestroy {
   private _resolveColor(
     redPlayer: string | null,
     yellowPlayer: string | null,
-    bluePlayer: string | null,
   ): PlayerColor | null {
     if (redPlayer === this.username) return 'red';
     if (yellowPlayer === this.username) return 'yellow';
-    if (bluePlayer === this.username) return 'blue';
     return null;
   }
 }

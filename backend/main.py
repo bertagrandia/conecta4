@@ -12,7 +12,7 @@ from auth import (
     decode_token,
 )
 from lobby import create_room, get_room, join_room, enable_ai_mode
-from websocket_manager import handle_connect, notify_room_state
+from websocket_manager import handle_connect
 
 app = FastAPI(title="Conecta 4 API")
 
@@ -66,9 +66,6 @@ async def create_room_endpoint(
 @app.post("/rooms/join/{code}")
 async def join_room_endpoint(code: str, current_user: str = Depends(get_current_user)):
     room = join_room(code.upper(), current_user)
-    # If blue player just joined, immediately notify existing WS connections
-    if room.blue_player == current_user:
-        await notify_room_state(code.upper())
     return room.to_dict()
 
 

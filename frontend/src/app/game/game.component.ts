@@ -20,6 +20,11 @@ import { AuthService } from '../services/auth.service';
       </header>
 
       <div class="status-bar">
+        <div class="player-tag" [class.active]="state().currentTurn === 'red' && state().status === 'playing'">
+          <span class="dot red"></span>
+          <span class="name">{{ state().redPlayer ?? 'Esperando...' }}</span>
+          <span class="score">{{ state().scores[state().redPlayer || ''] || 0 }}</span>
+        </div>
         <div class="turn-msg">
           <ng-container *ngIf="state().status === 'playing'">
             <ng-container *ngIf="isMyTurn(); else notMyTurn">¡Tu turno!</ng-container>
@@ -28,23 +33,10 @@ import { AuthService } from '../services/auth.service';
           <ng-container *ngIf="state().status === 'waiting'">Esperando oponente...</ng-container>
           <ng-container *ngIf="state().status === 'finished'">Partida terminada</ng-container>
         </div>
-        <div class="players-row">
-          <div class="player-tag" [class.active]="state().currentTurn === 'red' && state().status === 'playing'">
-            <span class="dot red"></span>
-            <span class="name">{{ state().redPlayer ?? 'Esperando...' }}</span>
-            <span class="score">{{ state().scores[state().redPlayer || ''] || 0 }}</span>
-          </div>
-          <div class="player-tag" [class.active]="state().currentTurn === 'yellow' && state().status === 'playing'">
-            <span class="dot yellow"></span>
-            <span class="name">{{ state().yellowPlayer ?? 'Esperando...' }}</span>
-            <span class="score">{{ state().scores[state().yellowPlayer || ''] || 0 }}</span>
-          </div>
-          <div class="player-tag" *ngIf="state().bluePlayer"
-               [class.active]="state().currentTurn === 'blue' && state().status === 'playing'">
-            <span class="dot blue"></span>
-            <span class="name">{{ state().bluePlayer }}</span>
-            <span class="score">{{ state().scores[state().bluePlayer || ''] || 0 }}</span>
-          </div>
+        <div class="player-tag" [class.active]="state().currentTurn === 'yellow' && state().status === 'playing'">
+          <span class="dot yellow"></span>
+          <span class="name">{{ state().yellowPlayer ?? 'Esperando...' }}</span>
+          <span class="score">{{ state().scores[state().yellowPlayer || ''] || 0 }}</span>
         </div>
       </div>
 
@@ -82,10 +74,7 @@ import { AuthService } from '../services/auth.service';
             </ng-container>
             <ng-container *ngIf="state().winner !== 'draw'">
               <div class="big-disc-wrap">
-                <span class="big-disc"
-                  [class.red]="state().winner === 'red'"
-                  [class.yellow]="state().winner === 'yellow'"
-                  [class.blue]="state().winner === 'blue'"></span>
+                <span class="big-disc" [class.red]="state().winner === 'red'" [class.yellow]="state().winner === 'yellow'"></span>
               </div>
               <h2 class="result-text">{{ winnerName() }} gana!</h2>
               <p class="result-sub" *ngIf="state().winner === state().myColor">¡Enhorabuena!</p>
@@ -120,25 +109,20 @@ import { AuthService } from '../services/auth.service';
     .surrender-btn:hover { background: rgba(192,57,43,0.1); }
 
     .status-bar {
-      display: flex; flex-direction: column; align-items: center; gap: 6px;
-      width: 100%; max-width: 620px; padding: 0.75rem 1rem; box-sizing: border-box;
-    }
-    .turn-msg { color: #7AAF72; font-size: 0.9rem; text-align: center; }
-    .players-row {
-      display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; width: 100%;
+      display: flex; align-items: center; justify-content: space-between;
+      width: 100%; max-width: 600px; padding: 1rem 1.5rem; box-sizing: border-box;
     }
     .player-tag {
-      display: flex; align-items: center; gap: 6px; padding: 5px 10px;
+      display: flex; align-items: center; gap: 8px; padding: 6px 12px;
       border-radius: 8px; border: 2px solid transparent; transition: border-color 0.2s, background 0.2s;
-      flex: 1; min-width: 90px; max-width: 180px;
     }
     .player-tag.active { border-color: #4DB349; background: rgba(77,179,73,0.08); }
-    .dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
+    .dot { width: 14px; height: 14px; border-radius: 50%; display: inline-block; }
     .dot.red    { background: #C0392B; }
     .dot.yellow { background: #E8B84B; }
-    .dot.blue   { background: #2980B9; }
-    .name  { color: #d4f5c8; font-size: 0.85rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; min-width: 0; }
-    .score { color: #4DB349; font-weight: 700; font-size: 0.95rem; flex-shrink: 0; }
+    .name  { color: #d4f5c8; font-size: 0.9rem; max-width: 100px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .score { color: #4DB349; font-weight: 700; font-size: 1rem; }
+    .turn-msg { color: #7AAF72; font-size: 0.9rem; text-align: center; }
 
     .board-area {
       flex: 1; display: flex; align-items: center; justify-content: center;
@@ -160,7 +144,6 @@ import { AuthService } from '../services/auth.service';
     .big-disc { display: inline-block; width: 64px; height: 64px; border-radius: 50%; }
     .big-disc.red    { background: radial-gradient(circle at 35% 35%, #e05050, #C0392B); box-shadow: 0 0 24px #C0392B88; }
     .big-disc.yellow { background: radial-gradient(circle at 35% 35%, #f5d080, #E8B84B); box-shadow: 0 0 24px #E8B84B88; }
-    .big-disc.blue   { background: radial-gradient(circle at 35% 35%, #5dade2, #2980B9); box-shadow: 0 0 24px #2980B988; }
     .result-text { color: #d4f5c8; font-size: 1.6rem; margin: 0.5rem 0; }
     .result-sub  { color: #E8B84B; font-size: 1rem; margin: 0; }
     .overlay-actions { display: flex; flex-direction: column; gap: 0.75rem; margin-top: 1.5rem; }
@@ -201,11 +184,10 @@ import { AuthService } from '../services/auth.service';
       .top-bar { padding: 0.5rem 0.75rem; }
       .room-label { font-size: 0.78rem; }
       .back-btn, .surrender-btn { padding: 3px 8px; font-size: 0.78rem; }
-      .status-bar { padding: 0.4rem 0.5rem; gap: 4px; }
-      .players-row { gap: 4px; }
-      .player-tag { padding: 3px 6px; gap: 4px; min-width: 70px; }
-      .name { font-size: 0.75rem; }
-      .score { font-size: 0.82rem; }
+      .status-bar { padding: 0.5rem 0.75rem; }
+      .player-tag { padding: 4px 6px; gap: 4px; }
+      .name { font-size: 0.78rem; max-width: 70px; }
+      .score { font-size: 0.9rem; }
       .turn-msg { font-size: 0.78rem; }
       .overlay-card { padding: 1.5rem; margin: 1rem; min-width: unset; width: calc(100% - 2rem); }
       .result-text { font-size: 1.3rem; }
@@ -218,19 +200,8 @@ export class GameComponent implements OnInit, OnDestroy {
   lastMove = signal<{ row: number; col: number } | null>(null);
 
   isMyTurn     = computed(() => { const s = this.state(); return s.myColor !== null && s.currentTurn === s.myColor; });
-  currentTurnName = computed(() => {
-    const s = this.state();
-    if (s.currentTurn === 'red')    return s.redPlayer;
-    if (s.currentTurn === 'yellow') return s.yellowPlayer;
-    return s.bluePlayer;
-  });
-  winnerName = computed(() => {
-    const s = this.state();
-    if (!s.winner || s.winner === 'draw') return '';
-    if (s.winner === 'red')    return s.redPlayer ?? '';
-    if (s.winner === 'yellow') return s.yellowPlayer ?? '';
-    return s.bluePlayer ?? '';
-  });
+  currentTurnName = computed(() => { const s = this.state(); return s.currentTurn === 'red' ? s.redPlayer : s.yellowPlayer; });
+  winnerName   = computed(() => { const s = this.state(); if (!s.winner || s.winner === 'draw') return ''; return s.winner === 'red' ? s.redPlayer : s.yellowPlayer; });
 
   constructor(private route: ActivatedRoute, private router: Router, private ws: WebSocketService, private auth: AuthService) {}
 

@@ -12,7 +12,6 @@ class RoomStatus(str, Enum):
 class PlayerColor(str, Enum):
     red = "red"
     yellow = "yellow"
-    blue = "blue"
 
 
 class UserRegister(BaseModel):
@@ -48,7 +47,6 @@ class RoomInfo(BaseModel):
     status: RoomStatus
     creator: str
     opponent: Optional[str] = None
-    blue_player: Optional[str] = None
     ai_mode: bool = False
 
 

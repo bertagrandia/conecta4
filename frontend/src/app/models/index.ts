@@ -1,5 +1,5 @@
 export type Board = number[][];
-export type PlayerColor = 'red' | 'yellow' | 'blue';
+export type PlayerColor = 'red' | 'yellow';
 export type GameStatus = 'waiting' | 'playing' | 'finished';
 
 export interface Token {
@@ -12,7 +12,6 @@ export interface RoomInfo {
   status: GameStatus;
   creator: string;
   opponent: string | null;
-  blue_player: string | null;
   ai_mode: boolean;
 }
 
@@ -23,7 +22,6 @@ export interface GameState {
   status: GameStatus;
   red_player: string | null;
   yellow_player: string | null;
-  blue_player: string | null;
   scores: Record<string, number>;
 }
 
@@ -34,9 +32,6 @@ export interface MoveResult {
   row: number;
   player: PlayerColor;
   current_turn: PlayerColor;
-  red_player: string | null;
-  yellow_player: string | null;
-  blue_player: string | null;
   scores: Record<string, number>;
 }
 
@@ -72,7 +67,6 @@ export interface LocalGameState {
   status: GameStatus;
   redPlayer: string | null;
   yellowPlayer: string | null;
-  bluePlayer: string | null;
   scores: Record<string, number>;
   winner: PlayerColor | 'draw' | null;
   winningCells: [number, number][];

@@ -16,8 +16,7 @@ import { Board, PlayerColor } from '../../models';
           <div class="preview-disc"
             [class.visible]="hoveredCol() === col && canPlay"
             [class.red]="myColor === 'red'"
-            [class.yellow]="myColor === 'yellow'"
-            [class.blue]="myColor === 'blue'">
+            [class.yellow]="myColor === 'yellow'">
           </div>
         </div>
       </div>
@@ -30,7 +29,6 @@ import { Board, PlayerColor } from '../../models';
             <div class="disc"
               [class.red]="board[row][col] === 1"
               [class.yellow]="board[row][col] === 2"
-              [class.blue]="board[row][col] === 3"
               [class.drop]="isLastDrop(row, col)">
             </div>
           </div>
@@ -47,7 +45,6 @@ import { Board, PlayerColor } from '../../models';
     .preview-disc.visible { opacity: 0.6; }
     .preview-disc.red    { background: #C0392B; }
     .preview-disc.yellow { background: #E8B84B; }
-    .preview-disc.blue   { background: #2980B9; }
 
     .board {
       display: flex; gap: 6px; background: #1E3D18;
@@ -79,10 +76,6 @@ import { Board, PlayerColor } from '../../models';
       background: radial-gradient(circle at 35% 35%, #f5d080, #E8B84B);
       box-shadow: 0 3px 10px rgba(232,184,75,0.6);
     }
-    .disc.blue {
-      background: radial-gradient(circle at 35% 35%, #5dade2, #2980B9);
-      box-shadow: 0 3px 10px rgba(41,128,185,0.6);
-    }
     .disc.drop { animation: drop 0.3s ease-in; }
     @keyframes drop {
       from { transform: translateY(-400px); opacity: 0.7; }
@@ -90,10 +83,8 @@ import { Board, PlayerColor } from '../../models';
     }
     .cell.winning .disc.red    { animation: glow-red    0.5s ease-in-out infinite alternate; }
     .cell.winning .disc.yellow { animation: glow-yellow 0.5s ease-in-out infinite alternate; }
-    .cell.winning .disc.blue   { animation: glow-blue   0.5s ease-in-out infinite alternate; }
     @keyframes glow-red    { from { filter: brightness(1); } to { filter: brightness(1.6) drop-shadow(0 0 10px #C0392B); } }
     @keyframes glow-yellow { from { filter: brightness(1); } to { filter: brightness(1.6) drop-shadow(0 0 10px #E8B84B); } }
-    @keyframes glow-blue   { from { filter: brightness(1); } to { filter: brightness(1.6) drop-shadow(0 0 10px #2980B9); } }
 
     @media (max-width: 520px) {
       .cell { width: 44px; height: 44px; }
