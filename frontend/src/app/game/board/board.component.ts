@@ -37,7 +37,7 @@ import { Board, PlayerColor } from '../../models';
     </div>
   `,
   styles: [`
-    .board-wrapper { display: flex; flex-direction: column; align-items: center; gap: 4px; user-select: none; }
+    .board-wrapper { display: flex; flex-direction: column; align-items: center; gap: 4px; user-select: none; width: 100%; }
 
     .preview-row { display: flex; gap: 6px; padding: 0 6px; }
     .preview-cell { width: 64px; height: 36px; display: flex; align-items: flex-end; justify-content: center; cursor: pointer; }
@@ -93,6 +93,14 @@ import { Board, PlayerColor } from '../../models';
       .preview-disc { width: 32px; height: 32px; }
       .board { gap: 4px; padding: 8px; }
       .column { gap: 4px; }
+    }
+    @media (max-width: 380px) {
+      .cell { width: 38px; height: 38px; }
+      .disc { width: 30px; height: 30px; }
+      .preview-cell { width: 38px; }
+      .preview-disc { width: 26px; height: 26px; }
+      .board { gap: 3px; padding: 6px; }
+      .column { gap: 3px; padding: 2px; }
     }
   `],
 })

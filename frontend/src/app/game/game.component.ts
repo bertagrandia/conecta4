@@ -114,7 +114,10 @@ import { AuthService } from '../services/auth.service';
     .score { color: #4DB349; font-weight: 700; font-size: 1rem; }
     .turn-msg { color: #7AAF72; font-size: 0.9rem; text-align: center; }
 
-    .board-area { flex: 1; display: flex; align-items: center; justify-content: center; padding: 1rem; }
+    .board-area {
+      flex: 1; display: flex; align-items: center; justify-content: center;
+      padding: 0.5rem; width: 100%; box-sizing: border-box; overflow-x: hidden;
+    }
 
     .overlay {
       position: fixed; inset: 0; background: rgba(11,26,8,0.88);
@@ -139,6 +142,19 @@ import { AuthService } from '../services/auth.service';
     .primary:hover   { background: #3D9939; }
     .secondary { background: #1E3D18; color: #7AAF72; border: 1px solid #2A4A22; }
     .secondary:hover { background: #2A5222; color: #d4f5c8; }
+
+    @media (max-width: 520px) {
+      .top-bar { padding: 0.5rem 0.75rem; }
+      .room-label { font-size: 0.78rem; }
+      .back-btn, .surrender-btn { padding: 3px 8px; font-size: 0.78rem; }
+      .status-bar { padding: 0.5rem 0.75rem; }
+      .player-tag { padding: 4px 6px; gap: 4px; }
+      .name { font-size: 0.78rem; max-width: 70px; }
+      .score { font-size: 0.9rem; }
+      .turn-msg { font-size: 0.78rem; }
+      .overlay-card { padding: 1.5rem; margin: 1rem; min-width: unset; width: calc(100% - 2rem); }
+      .result-text { font-size: 1.3rem; }
+    }
   `],
 })
 export class GameComponent implements OnInit, OnDestroy {
