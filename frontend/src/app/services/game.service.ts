@@ -22,6 +22,10 @@ export class GameService {
     return this.http.post<RoomInfo>(`${this.api}/rooms/${code.toUpperCase()}/ai`, {});
   }
 
+  startNow(code: string): Observable<RoomInfo> {
+    return this.http.post<RoomInfo>(`${this.api}/rooms/${code.toUpperCase()}/start`, {});
+  }
+
   getRoom(code: string): Observable<RoomInfo> {
     return this.http.get<RoomInfo>(`${this.api}/rooms/${code.toUpperCase()}`);
   }

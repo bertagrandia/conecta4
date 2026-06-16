@@ -6,6 +6,7 @@ COLS = 7
 EMPTY = 0
 RED = 1
 YELLOW = 2
+BLUE = 3
 
 Board = list[list[int]]
 

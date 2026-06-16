@@ -15,7 +15,10 @@ const INITIAL_STATE = (): LocalGameState => ({
   status: 'waiting',
   redPlayer: null,
   yellowPlayer: null,
+  bluePlayer: null,
   scores: {},
+  players: [],
+  disconnectedColors: [],
   winner: null,
   winningCells: [],
   disconnectedPlayer: null,
@@ -113,11 +116,14 @@ export class WebSocketService implements OnDestroy {
         next.status = msg.status;
         next.redPlayer = msg.red_player;
         next.yellowPlayer = msg.yellow_player;
+        next.bluePlayer = msg.blue_player;
         next.scores = msg.scores;
+        next.players = msg.players ?? [];
+        next.disconnectedColors = msg.disconnected_colors ?? [];
         next.winner = null;
         next.winningCells = [];
         next.disconnectedPlayer = null;
-        next.myColor = this._resolveColor(msg.red_player, msg.yellow_player);
+        next.myColor = this._resolveColor(msg.red_player, msg.yellow_player, msg.blue_player);
       } else if (msg.type === 'move_result') {
         next.board = msg.board;
         next.currentTurn = msg.current_turn;
@@ -130,7 +136,13 @@ export class WebSocketService implements OnDestroy {
         next.scores = msg.scores;
       } else if (msg.type === 'player_disconnected') {
         next.disconnectedPlayer = msg.username;
-        next.status = 'finished';
+        if (msg.continues) {
+          // 3-player: game goes on, just skip this player's turns
+          next.currentTurn = msg.current_turn ?? next.currentTurn;
+          next.disconnectedColors = msg.disconnected_colors ?? next.disconnectedColors;
+        } else {
+          next.status = 'finished';
+        }
       } else if (msg.type === 'ai_fallback') {
         next.aiError = msg.error;
       }
@@ -142,9 +154,11 @@ export class WebSocketService implements OnDestroy {
   private _resolveColor(
     redPlayer: string | null,
     yellowPlayer: string | null,
+    bluePlayer: string | null,
   ): PlayerColor | null {
-    if (redPlayer === this.username) return 'red';
+    if (redPlayer === this.username)    return 'red';
     if (yellowPlayer === this.username) return 'yellow';
+    if (bluePlayer === this.username)   return 'blue';
     return null;
   }
 }

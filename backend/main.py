@@ -1,3 +1,4 @@
+import asyncio
 from fastapi import FastAPI, Depends, HTTPException, WebSocket, WebSocketDisconnect, Query, status
 from fastapi.middleware.cors import CORSMiddleware
 from datetime import timedelta
@@ -11,8 +12,8 @@ from auth import (
     get_current_user,
     decode_token,
 )
-from lobby import create_room, get_room, join_room, enable_ai_mode
-from websocket_manager import handle_connect
+from lobby import create_room, get_room, join_room, start_now, enable_ai_mode
+from websocket_manager import handle_connect, notify_game_started
 
 app = FastAPI(title="Conecta 4 API")
 
@@ -66,6 +67,16 @@ async def create_room_endpoint(
 @app.post("/rooms/join/{code}")
 async def join_room_endpoint(code: str, current_user: str = Depends(get_current_user)):
     room = join_room(code.upper(), current_user)
+    # If 3rd player triggered an immediate start, notify open WebSocket clients
+    if room.status.value == "playing":
+        asyncio.create_task(notify_game_started(code.upper()))
+    return room.to_dict()
+
+
+@app.post("/rooms/{code}/start")
+async def start_now_endpoint(code: str, current_user: str = Depends(get_current_user)):
+    room = start_now(code.upper(), current_user)
+    asyncio.create_task(notify_game_started(code.upper()))
     return room.to_dict()
 
 
