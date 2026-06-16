@@ -28,13 +28,13 @@ export class AuthService {
   }
 
   logout(): void {
-    localStorage.removeItem(TOKEN_KEY);
+    sessionStorage.removeItem(TOKEN_KEY);
     this.isLoggedIn.set(false);
     this.router.navigate(['/login']);
   }
 
   getToken(): string | null {
-    return localStorage.getItem(TOKEN_KEY);
+    return sessionStorage.getItem(TOKEN_KEY);
   }
 
   getUsername(): string | null {
@@ -53,12 +53,12 @@ export class AuthService {
   }
 
   private saveToken(token: string): void {
-    localStorage.setItem(TOKEN_KEY, token);
+    sessionStorage.setItem(TOKEN_KEY, token);
     this.isLoggedIn.set(true);
   }
 
   private hasValidToken(): boolean {
-    const token = localStorage.getItem(TOKEN_KEY);
+    const token = sessionStorage.getItem(TOKEN_KEY);
     if (!token) return false;
     try {
       const payload = JSON.parse(atob(token.split('.')[1]));

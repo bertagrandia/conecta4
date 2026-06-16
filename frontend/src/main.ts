@@ -6,7 +6,7 @@ import { AppComponent } from './app/app.component';
 import { routes } from './app/app.routes';
 
 const authInterceptor: HttpInterceptorFn = (req, next) => {
-  const token = localStorage.getItem('connect4_token');
+  const token = sessionStorage.getItem('connect4_token');
   if (token) {
     req = req.clone({ setHeaders: { Authorization: `Bearer ${token}` } });
   }
