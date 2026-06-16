@@ -83,6 +83,20 @@ async def get_room_endpoint(code: str, current_user: str = Depends(get_current_u
     return room.to_dict()
 
 
+# ── AI Status ────────────────────────────────────────────────────────────────
+
+@app.get("/ai/status")
+async def ai_status():
+    from game import empty_board
+    from ai_groq import groq_best_move
+    try:
+        board = empty_board()
+        col = await groq_best_move(board)
+        return {"status": "ok", "provider": "groq", "test_column": col}
+    except Exception as e:
+        return {"status": "fallback", "provider": "minimax", "error": str(e)}
+
+
 # ── WebSocket ─────────────────────────────────────────────────────────────────
 
 @app.websocket("/ws/{room_code}")
