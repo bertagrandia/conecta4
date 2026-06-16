@@ -3,10 +3,10 @@
 html, body {
   height: 100%;
   font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-  background: #0D1B2A;
+  background: #0B1A08;
   color: #fff;
 }
 
 ::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: #0D1B2A; }
-::-webkit-scrollbar-thumb { background: #2a3d52; border-radius: 3px; }
+::-webkit-scrollbar-track { background: #0B1A08; }
+::-webkit-scrollbar-thumb { background: #2A4A22; border-radius: 3px; }
