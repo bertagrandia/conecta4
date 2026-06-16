@@ -8,10 +8,10 @@ from game import (
     check_winner,
     is_draw,
     empty_board,
-    ai_best_move,
     RED,
     YELLOW,
 )
+from ai_groq import groq_best_move
 
 _room_connections: dict[str, dict[str, WebSocket]] = {}
 
@@ -188,7 +188,7 @@ async def _ai_move(room: Room, room_code: str) -> None:
     await asyncio.sleep(0.6)
     if room.status != RoomStatus.playing or room.current_turn != "yellow":
         return
-    col = ai_best_move(room.board, YELLOW, depth=5)
+    col = await groq_best_move(room.board, YELLOW)
     new_board, row = drop_piece(room.board, col, YELLOW)
     room.board = new_board
     room.current_turn = "red"
