@@ -15,14 +15,8 @@ class PlayerColor(str, Enum):
     blue = "blue"
 
 
-class UserRegister(BaseModel):
-    username: str = Field(..., min_length=3, max_length=20)
-    password: str = Field(..., min_length=6)
-
-
-class UserLogin(BaseModel):
-    username: str
-    password: str
+class GuestLogin(BaseModel):
+    username: str = Field(..., min_length=1, max_length=20)
 
 
 class Token(BaseModel):
@@ -30,13 +24,8 @@ class Token(BaseModel):
     token_type: str = "bearer"
 
 
-class TokenData(BaseModel):
-    username: Optional[str] = None
-
-
 class UserInDB(BaseModel):
     username: str
-    hashed_password: str
 
 
 class RoomCreate(BaseModel):

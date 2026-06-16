@@ -1,45 +1,25 @@
 from datetime import datetime, timedelta, timezone
 from typing import Optional
 from jose import JWTError, jwt
-from passlib.context import CryptContext
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
-from models import UserInDB, TokenData
+from models import UserInDB
 from config import settings
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/guest")
 
 _users_db: dict[str, UserInDB] = {}
-
-
-def get_password_hash(password: str) -> str:
-    return pwd_context.hash(password)
-
-
-def verify_password(plain: str, hashed: str) -> bool:
-    return pwd_context.verify(plain, hashed)
 
 
 def get_user(username: str) -> Optional[UserInDB]:
     return _users_db.get(username)
 
 
-def create_user(username: str, password: str) -> UserInDB:
-    if username in _users_db:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Username already registered",
-        )
-    user = UserInDB(username=username, hashed_password=get_password_hash(password))
-    _users_db[username] = user
-    return user
-
-
-def authenticate_user(username: str, password: str) -> Optional[UserInDB]:
+def get_or_create_user(username: str) -> UserInDB:
     user = get_user(username)
-    if not user or not verify_password(password, user.hashed_password):
-        return None
+    if user is None:
+        user = UserInDB(username=username)
+        _users_db[username] = user
     return user
 
 

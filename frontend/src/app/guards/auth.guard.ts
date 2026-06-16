@@ -9,5 +9,5 @@ export const authGuard: CanActivateFn = () => {
   if (auth.getUsername() !== null) {
     return true;
   }
-  return router.createUrlTree(['/login']);
+  return router.createUrlTree(['/name']);
 };

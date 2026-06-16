@@ -15,22 +15,16 @@ export class AuthService {
 
   constructor(private http: HttpClient, private router: Router) {}
 
-  register(username: string, password: string): Observable<Token> {
+  guestLogin(username: string): Observable<Token> {
     return this.http
-      .post<Token>(`${this.api}/auth/register`, { username, password })
-      .pipe(tap((t) => this.saveToken(t.access_token)));
-  }
-
-  login(username: string, password: string): Observable<Token> {
-    return this.http
-      .post<Token>(`${this.api}/auth/login`, { username, password })
+      .post<Token>(`${this.api}/auth/guest`, { username })
       .pipe(tap((t) => this.saveToken(t.access_token)));
   }
 
   logout(): void {
     sessionStorage.removeItem(TOKEN_KEY);
     this.isLoggedIn.set(false);
-    this.router.navigate(['/login']);
+    this.router.navigate(['/name']);
   }
 
   getToken(): string | null {

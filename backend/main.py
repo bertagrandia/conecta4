@@ -4,10 +4,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from datetime import timedelta
 
 from config import settings
-from models import UserRegister, UserLogin, Token, RoomCreate
+from models import GuestLogin, Token, RoomCreate
 from auth import (
-    create_user,
-    authenticate_user,
+    get_or_create_user,
     create_access_token,
     get_current_user,
     decode_token,
@@ -28,24 +27,9 @@ app.add_middleware(
 
 # ── Auth ──────────────────────────────────────────────────────────────────────
 
-@app.post("/auth/register", response_model=Token)
-async def register(body: UserRegister):
-    user = create_user(body.username, body.password)
-    token = create_access_token(
-        {"sub": user.username},
-        timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES),
-    )
-    return Token(access_token=token)
-
-
-@app.post("/auth/login", response_model=Token)
-async def login(body: UserLogin):
-    user = authenticate_user(body.username, body.password)
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect username or password",
-        )
+@app.post("/auth/guest", response_model=Token)
+async def guest_login(body: GuestLogin):
+    user = get_or_create_user(body.username.strip())
     token = create_access_token(
         {"sub": user.username},
         timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES),

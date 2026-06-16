@@ -1,13 +1,13 @@
 import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
-  selector: 'app-login',
+  selector: 'app-name',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule],
   template: `
     <div class="auth-container">
       <div class="auth-card">
@@ -17,33 +17,23 @@ import { AuthService } from '../../services/auth.service';
           <span class="disc yellow"></span>
         </div>
 
-        <h2>Iniciar sesión</h2>
+        <h2>¿Cómo te llamas?</h2>
 
         <form [formGroup]="form" (ngSubmit)="submit()">
           <div class="field">
-            <label>Usuario</label>
-            <input formControlName="username" type="text" placeholder="tu_usuario" autocomplete="username" />
+            <label>Nombre</label>
+            <input formControlName="username" type="text" placeholder="Tu nombre" autocomplete="username" />
             <span class="error" *ngIf="form.get('username')?.invalid && form.get('username')?.touched">
-              Mínimo 3 caracteres
-            </span>
-          </div>
-
-          <div class="field">
-            <label>Contraseña</label>
-            <input formControlName="password" type="password" placeholder="••••••" autocomplete="current-password" />
-            <span class="error" *ngIf="form.get('password')?.invalid && form.get('password')?.touched">
-              Mínimo 6 caracteres
+              Indica un nombre (máx. 20 caracteres)
             </span>
           </div>
 
           <span class="error api-error" *ngIf="apiError()">{{ apiError() }}</span>
 
           <button type="submit" [disabled]="loading()">
-            {{ loading() ? 'Entrando...' : 'Entrar' }}
+            {{ loading() ? 'Entrando...' : 'Jugar' }}
           </button>
         </form>
-
-        <p class="switch">¿No tienes cuenta? <a routerLink="/register">Regístrate</a></p>
       </div>
     </div>
   `,
@@ -113,15 +103,11 @@ import { AuthService } from '../../services/auth.service';
     }
     button:hover:not(:disabled) { background: #3D9939; }
     button:disabled { opacity: 0.6; cursor: not-allowed; }
-    .switch { color: #7AAF72; text-align: center; margin-top: 1.2rem; font-size: 0.9rem; }
-    .switch a { color: #4DB349; text-decoration: none; }
-    .switch a:hover { text-decoration: underline; }
   `],
 })
-export class LoginComponent {
+export class NameComponent {
   form = this.fb.group({
-    username: ['', [Validators.required, Validators.minLength(3)]],
-    password: ['', [Validators.required, Validators.minLength(6)]],
+    username: ['', [Validators.required, Validators.minLength(1), Validators.maxLength(20)]],
   });
 
   loading = signal(false);
@@ -133,10 +119,10 @@ export class LoginComponent {
     if (this.form.invalid) { this.form.markAllAsTouched(); return; }
     this.loading.set(true);
     this.apiError.set('');
-    const { username, password } = this.form.value;
-    this.auth.login(username!, password!).subscribe({
+    const username = this.form.value.username!.trim();
+    this.auth.guestLogin(username).subscribe({
       next: () => this.router.navigate(['/lobby']),
-      error: (e) => { this.apiError.set(e.error?.detail ?? 'Error al iniciar sesión'); this.loading.set(false); },
+      error: (e) => { this.apiError.set(e.error?.detail ?? 'Error al entrar'); this.loading.set(false); },
     });
   }
 }

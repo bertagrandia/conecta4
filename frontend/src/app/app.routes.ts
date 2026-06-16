@@ -4,14 +4,9 @@ import { authGuard } from './guards/auth.guard';
 export const routes: Routes = [
   { path: '', redirectTo: 'lobby', pathMatch: 'full' },
   {
-    path: 'login',
+    path: 'name',
     loadComponent: () =>
-      import('./auth/login/login.component').then((m) => m.LoginComponent),
-  },
-  {
-    path: 'register',
-    loadComponent: () =>
-      import('./auth/register/register.component').then((m) => m.RegisterComponent),
+      import('./auth/name/name.component').then((m) => m.NameComponent),
   },
   {
     path: 'lobby',
