@@ -29,6 +29,14 @@ import { RouterLink } from '@angular/router';
           <h2>Hundir la Flota</h2>
           <p>Coloca tu flota y hunde al rival.</p>
         </a>
+
+        <a class="game-card snake-card" routerLink="/snake">
+          <div class="icon-row">
+            <span class="snake-icon"></span>
+          </div>
+          <h2>Snake Arena</h2>
+          <p>Multijugador en tiempo real, sin límite de jugadores.</p>
+        </a>
       </main>
     </div>
   `,
@@ -62,6 +70,12 @@ import { RouterLink } from '@angular/router';
       width: 64px; height: 28px; border-radius: 4px;
       background: linear-gradient(180deg, #2d6a4f, #1b3a5c);
       box-shadow: 0 0 10px #2d6a4faa;
+    }
+    .snake-card:hover { border-color: #39FF88; }
+    .snake-icon {
+      width: 64px; height: 24px; border-radius: 12px;
+      background: linear-gradient(90deg, #39FF88, #5C7BFF);
+      box-shadow: 0 0 14px #39FF88aa;
     }
   `],
 })

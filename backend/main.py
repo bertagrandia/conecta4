@@ -4,6 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from connect4.config import settings as connect4_settings
 from connect4.main import app as connect4_app
 from battleship.main import app as battleship_app
+from snake.main import app as snake_app
 
 app = FastAPI(title="Games Hub API")
 
@@ -17,6 +18,7 @@ app.add_middleware(
 
 app.mount("/connect4", connect4_app)
 app.mount("/battleship", battleship_app)
+app.mount("/snake", snake_app)
 
 
 @app.get("/health")

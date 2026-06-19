@@ -49,5 +49,24 @@ export const routes: Routes = [
       { path: '**', redirectTo: 'lobby' },
     ],
   },
+  {
+    path: 'snake',
+    children: [
+      { path: '', redirectTo: 'lobby', pathMatch: 'full' },
+      {
+        path: 'lobby',
+        canActivate: [authGuard],
+        loadComponent: () =>
+          import('./games/snake/snake-lobby.component').then((m) => m.SnakeLobbyComponent),
+      },
+      {
+        path: 'game/:code',
+        canActivate: [authGuard],
+        loadComponent: () =>
+          import('./games/snake/snake-room.component').then((m) => m.SnakeRoomComponent),
+      },
+      { path: '**', redirectTo: 'lobby' },
+    ],
+  },
   { path: '**', redirectTo: '' },
 ];
