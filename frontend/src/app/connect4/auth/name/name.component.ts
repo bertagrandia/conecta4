@@ -11,11 +11,17 @@ import { AuthService } from '../../services/auth.service';
   template: `
     <div class="auth-container">
       <div class="auth-card">
-        <div class="logo">
-          <span class="disc red"></span>
-          <span class="title">Conecta 4</span>
-          <span class="disc yellow"></span>
+        <div class="logo" *ngIf="brand === 'snake'; else connect4Logo">
+          <span class="snake-emoji">🐍</span>
+          <span class="title">Snake Arena</span>
         </div>
+        <ng-template #connect4Logo>
+          <div class="logo">
+            <span class="disc red"></span>
+            <span class="title">Conecta 4</span>
+            <span class="disc yellow"></span>
+          </div>
+        </ng-template>
 
         <h2>¿Cómo te llamas?</h2>
 
@@ -69,6 +75,7 @@ import { AuthService } from '../../services/auth.service';
     }
     .disc.red    { background: #C0392B; box-shadow: 0 0 12px #C0392Baa; }
     .disc.yellow { background: #E8B84B; box-shadow: 0 0 12px #E8B84Baa; }
+    .snake-emoji { font-size: 1.8rem; filter: drop-shadow(0 0 8px #39FF88aa); }
     .title { color: #d4f5c8; font-size: 1.4rem; font-weight: 700; }
     h2 { color: #d4f5c8; text-align: center; margin-bottom: 1.5rem; font-weight: 600; }
     .field { margin-bottom: 1rem; }
@@ -113,6 +120,9 @@ export class NameComponent {
   loading = signal(false);
   apiError = signal('');
 
+  private readonly returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') || '/connect4/lobby';
+  readonly brand = this.returnUrl.startsWith('/snake') ? 'snake' : 'connect4';
+
   constructor(
     private fb: FormBuilder,
     private auth: AuthService,
@@ -125,9 +135,8 @@ export class NameComponent {
     this.loading.set(true);
     this.apiError.set('');
     const username = this.form.value.username!.trim();
-    const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') || '/connect4/lobby';
     this.auth.guestLogin(username).subscribe({
-      next: () => this.router.navigateByUrl(returnUrl),
+      next: () => this.router.navigateByUrl(this.returnUrl),
       error: (e) => { this.apiError.set(e.error?.detail ?? 'Error al entrar'); this.loading.set(false); },
     });
   }
