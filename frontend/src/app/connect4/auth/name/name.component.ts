@@ -9,11 +9,11 @@ import { AuthService } from '../../services/auth.service';
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   template: `
-    <div class="auth-container">
-      <div class="auth-card">
+    <div class="auth-container" [class.snake-theme]="brand === 'snake'">
+      <div class="auth-card" [class.snake-theme]="brand === 'snake'">
         <div class="logo" *ngIf="brand === 'snake'; else connect4Logo">
           <span class="snake-emoji">🐍</span>
-          <span class="title">Snake Arena</span>
+          <span class="title snake-title">Snake Arena</span>
         </div>
         <ng-template #connect4Logo>
           <div class="logo">
@@ -23,12 +23,18 @@ import { AuthService } from '../../services/auth.service';
           </div>
         </ng-template>
 
-        <h2>¿Cómo te llamas?</h2>
+        <h2 [class.snake-theme]="brand === 'snake'">¿Cómo te llamas?</h2>
 
         <form [formGroup]="form" (ngSubmit)="submit()">
           <div class="field">
-            <label>Nombre</label>
-            <input formControlName="username" type="text" placeholder="Tu nombre" autocomplete="username" />
+            <label [class.snake-theme]="brand === 'snake'">Nombre</label>
+            <input
+              formControlName="username"
+              type="text"
+              placeholder="Tu nombre"
+              autocomplete="username"
+              [class.snake-theme]="brand === 'snake'"
+            />
             <span class="error" *ngIf="form.get('username')?.invalid && form.get('username')?.touched">
               Indica un nombre (máx. 20 caracteres)
             </span>
@@ -36,7 +42,7 @@ import { AuthService } from '../../services/auth.service';
 
           <span class="error api-error" *ngIf="apiError()">{{ apiError() }}</span>
 
-          <button type="submit" [disabled]="loading()">
+          <button type="submit" [disabled]="loading()" [class.snake-theme]="brand === 'snake'">
             {{ loading() ? 'Entrando...' : 'Jugar' }}
           </button>
         </form>
@@ -110,6 +116,44 @@ import { AuthService } from '../../services/auth.service';
     }
     button:hover:not(:disabled) { background: #3D9939; }
     button:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    /* ── Snake Arena theme ──────────────────────────────────────────────── */
+    .auth-container.snake-theme {
+      background: #0B0E14;
+      background-image:
+        linear-gradient(#1A1F2B 1px, transparent 1px),
+        linear-gradient(90deg, #1A1F2B 1px, transparent 1px);
+      background-size: 32px 32px;
+    }
+    .auth-card.snake-theme {
+      background: #11151D;
+      border: 1px solid #1A1F2B;
+      font-family: 'Consolas', 'Courier New', monospace;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.6), 0 0 24px #39FF8822;
+    }
+    .snake-title { color: #d4f5c8; letter-spacing: 1px; }
+    h2.snake-theme { color: #d4f5c8; }
+    label.snake-theme { color: #7AAF72; letter-spacing: 0.5px; }
+    input.snake-theme {
+      background: #0B0E14;
+      border: 1px solid #2A4A22;
+      color: #d4f5c8;
+      font-family: inherit;
+    }
+    input.snake-theme:focus { border-color: #39FF88; box-shadow: 0 0 0 3px #39FF8822; }
+    input.snake-theme::placeholder { color: #3d5a4a; }
+    button.snake-theme {
+      background: linear-gradient(90deg, #39FF88, #5C7BFF);
+      color: #0B0E14;
+      font-family: inherit;
+      letter-spacing: 0.5px;
+      box-shadow: 0 0 16px #39FF8855;
+    }
+    button.snake-theme:hover:not(:disabled) {
+      background: linear-gradient(90deg, #5CFFA3, #7B92FF);
+      box-shadow: 0 0 22px #39FF8888;
+    }
+    button.snake-theme:disabled { box-shadow: none; }
   `],
 })
 export class NameComponent {
