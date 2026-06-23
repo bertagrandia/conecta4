@@ -156,6 +156,11 @@ export class BoardComponent implements OnChanges {
 
     const next = this.fleetDefs.find((d) => d.id !== shipId && !this.isShipPlaced(d.id));
     this.selectedShipId.set(next ? next.id : null);
+
+    // The mouse hasn't moved, so no new mouseenter will fire: clear the stale
+    // hover so the next ship's preview doesn't render in red on top of the
+    // ship that was just placed until the user actually moves the cursor.
+    this.hoverCell.set(null);
   }
 
   randomPlacement(): void {
