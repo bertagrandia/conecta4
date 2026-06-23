@@ -22,8 +22,7 @@ export class AuthService {
   }
 
   logout(): void {
-    sessionStorage.removeItem(TOKEN_KEY);
-    this.isLoggedIn.set(false);
+    this.clearSession();
     this.router.navigate(['/connect4/name']);
   }
 
@@ -37,13 +36,23 @@ export class AuthService {
     try {
       const payload = JSON.parse(atob(token.split('.')[1]));
       if (payload.exp * 1000 < Date.now()) {
-        this.logout();
+        // Just clear the stale session here: navigating away is the
+        // caller's responsibility (e.g. a route guard, which needs to
+        // redirect with its own returnUrl). Triggering navigation as a
+        // side effect of this check raced with the guard's own redirect
+        // and silently dropped the returnUrl query param.
+        this.clearSession();
         return null;
       }
       return payload.sub ?? null;
     } catch {
       return null;
     }
+  }
+
+  private clearSession(): void {
+    sessionStorage.removeItem(TOKEN_KEY);
+    this.isLoggedIn.set(false);
   }
 
   private saveToken(token: string): void {
