@@ -1,7 +1,7 @@
 import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
@@ -113,15 +113,21 @@ export class NameComponent {
   loading = signal(false);
   apiError = signal('');
 
-  constructor(private fb: FormBuilder, private auth: AuthService, private router: Router) {}
+  constructor(
+    private fb: FormBuilder,
+    private auth: AuthService,
+    private router: Router,
+    private route: ActivatedRoute,
+  ) {}
 
   submit(): void {
     if (this.form.invalid) { this.form.markAllAsTouched(); return; }
     this.loading.set(true);
     this.apiError.set('');
     const username = this.form.value.username!.trim();
+    const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') || '/connect4/lobby';
     this.auth.guestLogin(username).subscribe({
-      next: () => this.router.navigate(['/connect4/lobby']),
+      next: () => this.router.navigateByUrl(returnUrl),
       error: (e) => { this.apiError.set(e.error?.detail ?? 'Error al entrar'); this.loading.set(false); },
     });
   }

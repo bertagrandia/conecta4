@@ -12,7 +12,7 @@ import { SnakeRoomSummary } from './models';
   template: `
     <div class="lobby-bg">
       <header class="lobby-header">
-        <span class="brand">🐍 Snake Arena</span>
+        <span class="brand">🐍 Snake</span>
       </header>
 
       <main class="lobby-main">
@@ -122,7 +122,7 @@ export class SnakeLobbyComponent implements OnInit, OnDestroy {
 
   private pollHandle: ReturnType<typeof setInterval> | null = null;
 
-  constructor(private rooms: SnakeRoomService, private router: Router) {}
+  constructor(private rooms: SnakeRoomService, private router: Router) { }
 
   ngOnInit(): void {
     this.refreshRooms();
@@ -136,7 +136,7 @@ export class SnakeLobbyComponent implements OnInit, OnDestroy {
   refreshRooms(): void {
     this.rooms.listPublicRooms().subscribe({
       next: (rooms) => this.publicRooms.set(rooms),
-      error: () => {},
+      error: () => { },
     });
   }
 
